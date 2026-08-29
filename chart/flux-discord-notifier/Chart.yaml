@@ -1,0 +1,8 @@
+apiVersion: v2
+name: flux-discord-notifier
+description: Authenticated Flux event notifications for Discord
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+kubeVersion: ">=1.25.0-0"
+

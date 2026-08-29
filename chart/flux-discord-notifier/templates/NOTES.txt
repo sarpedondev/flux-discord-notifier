@@ -1,0 +1,7 @@
+Flux Discord Notifier is available inside the cluster at:
+  http://{{ include "flux-discord-notifier.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+{{- if not .Values.flux.enabled }}
+Flux Provider and Alert creation is disabled. Set flux.enabled=true to create them.
+{{- end }}
+

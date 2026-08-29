@@ -1,0 +1,35 @@
+{{- if .Values.flux.enabled }}
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: {{ include "flux-discord-notifier.providerName" . }}
+  labels:
+    {{- include "flux-discord-notifier.labels" . | nindent 4 }}
+spec:
+  type: generic-hmac
+  address: {{ printf "http://%s.%s.svc.cluster.local:%v/webhooks/flux" (include "flux-discord-notifier.fullname" .) .Release.Namespace .Values.service.port | quote }}
+  secretRef:
+    name: {{ include "flux-discord-notifier.secretName" . }}
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: {{ default (include "flux-discord-notifier.fullname" .) .Values.flux.alertName }}
+  labels:
+    {{- include "flux-discord-notifier.labels" . | nindent 4 }}
+spec:
+  providerRef:
+    name: {{ include "flux-discord-notifier.providerName" . }}
+  eventSeverity: {{ .Values.flux.eventSeverity }}
+  {{- with .Values.flux.summary }}
+  summary: {{ . | quote }}
+  {{- end }}
+  eventMetadata:
+    cluster: {{ .Values.clusterName | quote }}
+    {{- with .Values.flux.eventMetadata }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  eventSources:
+    {{- toYaml .Values.flux.eventSources | nindent 4 }}
+{{- end }}
+

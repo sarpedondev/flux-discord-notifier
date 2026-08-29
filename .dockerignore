@@ -1,0 +1,7 @@
+.git
+.github
+.venv
+.local-secrets
+__pycache__
+*.py[cod]
+chart

@@ -1,0 +1,83 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/example/flux-discord-notifier
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+  readOnlyRootFilesystem: true
+  runAsUser: 10001
+  runAsGroup: 10001
+
+service:
+  type: ClusterIP
+  port: 8000
+
+clusterName: unknown
+
+secrets:
+  existingSecret: ""
+  create: false
+  discordWebhookUrl: ""
+  hmacToken: ""
+
+deduplication:
+  ttlSeconds: 300
+  maxEntries: 10000
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    memory: 128Mi
+
+probes:
+  liveness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    initialDelaySeconds: 2
+    periodSeconds: 5
+
+flux:
+  enabled: false
+  providerName: ""
+  alertName: ""
+  eventSeverity: info
+  summary: ""
+  eventMetadata: {}
+  # namespace defaults to the Helm release namespace. Set it explicitly for
+  # event sources that live in another namespace.
+  eventSources:
+    - kind: ImagePolicy
+      name: "*"
+    - kind: ImageUpdateAutomation
+      name: "*"
+    - kind: Kustomization
+      name: "*"
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

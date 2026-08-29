@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: flux-discord-notifier:ci
+
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - name: Lint chart
+        run: >-
+          helm lint chart/flux-discord-notifier
+          --set secrets.create=true
+          --set secrets.discordWebhookUrl=https://discord.example/webhook
+          --set secrets.hmacToken=test-token
+      - name: Render optional Flux resources
+        run: >-
+          helm template test chart/flux-discord-notifier
+          --set secrets.create=true
+          --set secrets.discordWebhookUrl=https://discord.example/webhook
+          --set secrets.hmacToken=test-token
+          --set flux.enabled=true
