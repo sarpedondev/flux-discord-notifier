@@ -23,18 +23,29 @@ def classify(event: FluxEvent) -> EventStyle | None:
         return EventStyle("Deployment failed", RED)
 
     kind = event.involved_object.kind.casefold()
-    if kind == "imagepolicy":
+    if kind == "imagepolicy" and _is_image_change(event):
         return EventStyle("New image detected", BLUE)
     if kind == "imageupdateautomation" and _is_success(event):
         return EventStyle("Deployment queued", PURPLE)
-    if kind == "kustomization" and _is_success(event):
-        return EventStyle("Deployment completed", GREEN)
+    if kind == "kustomization" and _is_resource_change(event):
+        return EventStyle("Cluster changes applied", GREEN)
     return None
 
 
 def _is_success(event: FluxEvent) -> bool:
     text = f"{event.reason} {event.message}".casefold()
     return any(word in text for word in ("succeed", "completed", "finished", "committed", "pushed"))
+
+
+def _is_image_change(event: FluxEvent) -> bool:
+    text = f"{event.reason} {event.message}".casefold()
+    return any(phrase in text for phrase in ("updated from", "updated to", "new image", "latest image"))
+
+
+def _is_resource_change(event: FluxEvent) -> bool:
+    # Kustomize emits Progressing only when its server-side apply changed resources.
+    # ReconciliationSucceeded is also emitted for periodic no-op drift checks.
+    return event.reason.casefold() == "progressing"
 
 
 def _metadata_value(metadata: dict[str, Any], *names: str) -> str | None:

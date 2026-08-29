@@ -66,6 +66,9 @@ flux:
   providerName: ""
   alertName: ""
   eventSeverity: info
+  # Successful interval checks are emitted even when no resources changed.
+  exclusionList:
+    - "^Reconciliation finished in .*next run in .*$"
   summary: ""
   eventMetadata: {}
   # namespace defaults to the Helm release namespace. Set it explicitly for

@@ -21,6 +21,10 @@ spec:
   providerRef:
     name: {{ include "flux-discord-notifier.providerName" . }}
   eventSeverity: {{ .Values.flux.eventSeverity }}
+  {{- with .Values.flux.exclusionList }}
+  exclusionList:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.flux.summary }}
   summary: {{ . | quote }}
   {{- end }}
@@ -32,4 +36,3 @@ spec:
   eventSources:
     {{- toYaml .Values.flux.eventSources | nindent 4 }}
 {{- end }}
-
