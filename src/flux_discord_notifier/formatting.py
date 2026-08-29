@@ -77,6 +77,8 @@ def field_value(value: str, limit: int = 500) -> str:
 
 def discord_payload(event: FluxEvent, style: EventStyle, default_cluster: str) -> dict[str, Any]:
     return {
+        "username": "Flux",
+        "avatar_url": "https://fluxcd.io/img/flux-icon@2x.png",
         "allowed_mentions": {"parse": []},
         "embeds": [
             {
