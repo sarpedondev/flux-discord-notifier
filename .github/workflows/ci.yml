@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   docker:
@@ -14,11 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        if: github.event_name == 'push'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v6
         with:
           context: .
-          push: false
-          tags: flux-discord-notifier:ci
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ghcr.io/sarpedondev/flux-discord-notifier:latest
+            ghcr.io/sarpedondev/flux-discord-notifier:master
+            ghcr.io/sarpedondev/flux-discord-notifier:${{ github.sha }}
 
   helm:
     runs-on: ubuntu-latest

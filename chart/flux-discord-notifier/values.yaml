@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/example/flux-discord-notifier
+  repository: ghcr.io/sarpedondev/flux-discord-notifier
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: master
 
 imagePullSecrets: []
 nameOverride: ""
